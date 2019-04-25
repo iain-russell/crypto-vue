@@ -1,23 +1,20 @@
 <template>
   <div class="container">
     <div id="app">
-      <!-- <Navbar /> -->
-      <Graph />
+      <Navbar />
+      <router-view> </router-view>
+      <!-- <Graph /> -->
     </div>
   </div>
 </template>
 
 <script>
-import Graph from "./components/Graph.vue";
 import Navbar from "./components/Navbar.vue";
-import GraphMiniChart from "./components/GraphMiniChart.vue";
 
 export default {
   name: "app",
   components: {
-    Graph,
-    Navbar,
-    GraphMiniChart
+    Navbar
   }
 };
 </script>

@@ -1,6 +1,9 @@
 $primary: #00d1b2;
-@import "~bulma/sass/utilities/_all";
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700,800,900');
 
+@import "~bulma/sass/utilities/_all";
+$navbar-breakpoint: $gap;
 @import "../../node_modules/bulma/sass/utilities/initial-variables.sass";
+$navbar-padding-vertical: 2rem;
 
 @import "~bulma/bulma";

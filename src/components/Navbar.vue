@@ -1,70 +1,36 @@
 <template>
   <div>
-    This is the navbar
-      <apexchart
-        type="line"
-        height="150"
-        width="250"
-        :options="chartOptions"
-        :series="series"
-      />
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-item">
+        <router-link to="/" class="navbar-item">
+          <p class="subtitle sushi-title">CoinSushi</p>
+        </router-link>
+      </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <router-link to="/about" class="navbar-item">
+            <p class="subtitle">
+              About
+            </p>
+          </router-link>
+        </div>
+      </div>
+    </nav>
   </div>
 </template>
 
 <script>
-import VueApexCharts from "vue-apexcharts";
-
 export default {
-  name: "Navbar",
-  components: {
-    apexchart: VueApexCharts
-  },
-  data() {
-    return {
-      series: [
-        {
-          name: "Desktops",
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-        }
-      ],
-      chartOptions: {
-        chart: {
-          height: 350,
-          zoom: {
-            enabled: false
-          }
-        },
-        dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          curve: "straight"
-        },
-        title: {
-          text: "Product Trends by Month",
-          align: "left"
-        },
-        grid: {
-          row: {
-            colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-            opacity: 0.5
-          }
-        },
-        xaxis: {
-          categories: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep"
-          ]
-        }
-      }
-    };
-  }
+  name: "Navbar"
 };
 </script>
+<style scoped>
+.sushi-title {
+  font-family: "Nunito", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+}
+.navbar {
+  padding: 10px;
+}
+</style>

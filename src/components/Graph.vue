@@ -1,15 +1,35 @@
 <template>
   <div>
-    <section class="section">
-      <!-- <div class="container"> -->
-        <b-select v-model="currency" icon="earth" @change="getCoins()">
-          <option value="eur">EUR</option>
-          <option value="gbp">GBP</option>
-          <option value="usd">USD</option>
-        </b-select>
-      <!-- </div> -->
+    <section class="" id="market-info">
+      <nav class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Market Cap</p>
+            <p class="subtitle">{{ this.sign() }}{{ this.marketCap }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Market Dominance</p>
+            BTC <b>{{ this.btcDominance }}</b
+            >% ETH <b>{{ this.ethDominance }}</b
+            >% XRP <b>{{ this.xrpDominance }}</b
+            >%
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">Currency</p>
+            <b-select v-model="currency" icon="earth" class="currency-selector">
+              <option value="eur">EUR</option>
+              <option value="gbp">GBP</option>
+              <option value="usd">USD</option>
+            </b-select>
+          </div>
+        </div>
+      </nav>
     </section>
-      <section class="section" id="table-section">
+    <section class="section" id="table-section">
       <b-table
         class="card"
         :data="coins"
@@ -42,7 +62,9 @@
               <figure class="media-left">
                 <img :src="props.row.image" class="image is-24x24" />
               </figure>
-              <div class="media-content"><b>{{ props.row.name }}</b></div>
+              <div class="media-content">
+                <b>{{ props.row.name }}</b>
+              </div>
             </article>
           </b-table-column>
           <b-table-column
@@ -100,36 +122,52 @@
           </b-table-column>
         </template>
       </b-table>
-  </section>
-</div>
-</div>
+    </section>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
+import { router } from "../main.js";
 
 import GraphMiniChart from "./GraphMiniChart";
+import GraphMegaChart from "./GraphMegaChart";
 
 export default {
   name: "Graph",
-  components: { GraphMiniChart },
+  components: { GraphMiniChart, GraphMegaChart },
   data: function() {
     return {
       coins: [],
+      coinsPaprika: [],
       currency: "eur",
       loading: false,
       sparklineData: [],
-      selected: null
+      selected: null,
+      selectedPaprika: "",
+      marketData: [],
+      marketCap: [],
+      btcDominance: "",
+      ethDominance: "",
+      xrpDominance: ""
     };
   },
   created: function() {
     this.getCoins();
+    this.getCoinsPaprika();
+    this.getMarketCap();
   },
   watch: {
     currency: function() {
       this.getCoins();
+      this.getMarketCap();
+    },
+    selected: function() {
+      this.updateSelectedCoinPaprika();
+      this.clickMegaChart();
     }
   },
+  computed: {},
   methods: {
     async getCoins() {
       this.loading = true;
@@ -140,6 +178,10 @@ export default {
       );
       this.coins = data;
       this.loading = false;
+    },
+    async getCoinsPaprika() {
+      const { data } = await axios.get("https://api.coinpaprika.com/v1/coins");
+      this.coinsPaprika = data;
     },
     formatNumber(num) {
       if (num < 1) {
@@ -173,6 +215,34 @@ export default {
       } else if (this.currency === "usd") {
         return "$";
       }
+    },
+    async getMarketCap() {
+      const { data } = await axios.get(
+        `https://api.coingecko.com/api/v3/global`
+      );
+      this.marketData = data.data;
+      this.marketCap = this.formatNumber(
+        data.data.total_market_cap[this.currency].toFixed()
+      );
+      this.btcDominance = data.data.market_cap_percentage.btc.toFixed(2);
+      this.ethDominance = data.data.market_cap_percentage.eth.toFixed(2);
+      this.xrpDominance = data.data.market_cap_percentage.xrp.toFixed(2);
+    },
+    updateSelectedCoinPaprika() {
+      this.selectedPaprika = this.coinsPaprika.find(
+        coin => coin.name === this.selected.name
+      );
+    },
+    clickMegaChart(payload) {
+      router.push({
+        // path: '/megachart',
+        name: "megachart",
+        params: {
+          selected: this.selected,
+          selectedPaprika: this.selectedPaprika,
+          currency: this.currency
+        }
+      });
     }
   }
 };
@@ -186,7 +256,11 @@ table td {
 .is-selected {
   background-color: white !important;
 }
-#table-section {
-  padding-top: 0;
+#margin-info {
+  padding-top: none;
+  margin-top: 0;
 }
+/* #table-section {
+  padding-top: 0;
+} */
 </style>
