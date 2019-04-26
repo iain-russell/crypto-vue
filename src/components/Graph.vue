@@ -5,7 +5,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Market Cap</p>
-            <p class="subtitle">{{ this.sign() }}{{ this.marketCap }}</p>
+            <p class="subtitle">{{ this.currencyUnit }}{{ this.marketCap }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
@@ -74,7 +74,7 @@
             sortable
             centered
           >
-            {{ sign() + formatNumber(props.row.market_cap) }}
+            {{ currencyUnit }} {{ formatNumber(props.row.market_cap) }}
           </b-table-column>
           <b-table-column
             field="current_price"
@@ -83,7 +83,7 @@
             sortable
             centered
           >
-            {{ sign() + formatPrice(props.row.current_price) }}
+            {{ currencyUnit }}{{ formatPrice(props.row.current_price) }}
           </b-table-column>
           <b-table-column
             class="is-right"
@@ -141,10 +141,12 @@ export default {
       coins: [],
       coinsPaprika: [],
       currency: "eur",
+      currencyUnit: "",
       loading: false,
       sparklineData: [],
       selected: null,
       selectedPaprika: "",
+      currencies: [],
       marketData: [],
       marketCap: [],
       btcDominance: "",
@@ -156,11 +158,14 @@ export default {
     this.getCoins();
     this.getCoinsPaprika();
     this.getMarketCap();
+    this.getCurrencies();
+    // this.findCurrencyUnit();
   },
   watch: {
     currency: function() {
       this.getCoins();
       this.getMarketCap();
+      this.findCurrencyUnit();
     },
     selected: function() {
       this.updateSelectedCoinPaprika();
@@ -207,14 +212,15 @@ export default {
         return "has-text-danger";
       }
     },
-    sign() {
-      if (this.currency === "eur") {
-        return "€";
-      } else if (this.currency === "gbp") {
-        return "£";
-      } else if (this.currency === "usd") {
-        return "$";
-      }
+    async getCurrencies() {
+      const { data } = await axios.get(
+        "https://api.coingecko.com/api/v3/exchange_rates"
+      );
+      this.currencies = data.rates;
+      this.findCurrencyUnit();
+    },
+    findCurrencyUnit() {
+      this.currencyUnit = this.currencies[this.currency].unit;
     },
     async getMarketCap() {
       const { data } = await axios.get(
@@ -240,7 +246,8 @@ export default {
         params: {
           selected: this.selected,
           selectedPaprika: this.selectedPaprika,
-          currency: this.currency
+          currency: this.currency,
+          currencyUnit: this.currencyUnit
         }
       });
     }

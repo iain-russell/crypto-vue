@@ -1,5 +1,39 @@
 <template>
   <div>
+    <section class="">
+      <nav class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">24hr High</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">24hr Low</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">24hr Range</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">All time high</p>
+            <p class="subtitle">{{ this.currencyUnit }}{{ this.ath }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">From ATH</p>
+            <p class="subtitle"></p>
+          </div>
+        </div>
+      </nav>
+    </section>
     <section class="section">
       <div class="center">
         <button class="button" :value="this.lastDay" @click="setStartDate">
@@ -40,7 +74,7 @@ export default {
   components: {
     apexchart: VueApexCharts
   },
-  props: ["selected", "selectedPaprika", "currency"],
+  props: ["selected", "selectedPaprika", "currency", "currencyUnit"],
 
   data() {
     return {
@@ -53,7 +87,9 @@ export default {
       startDate: "",
       timeInterval: "30m",
       coinHistory: [],
+      coinHistoryPaprika: [],
       priceHistory: [],
+      ath: "",
       series: [
         {
           data: []
@@ -85,7 +121,9 @@ export default {
     this.getRelevantDates();
     this.startDate = this.lastDay;
     this.getCoinHistory();
-    this.getCoinHistorySpecific();
+    this.getCoinHistoryPaprika();
+    this.getCoinHistoryPaprikaSpecific();
+    this.findCoinAth();
   },
   methods: {
     getRelevantDates() {
@@ -115,14 +153,23 @@ export default {
     },
     async getCoinHistory() {
       const { data } = await axios.get(
+        `https://api.coingecko.com/api/v3/coins/${this.selected.id}`
+      );
+      // console.log(data);
+      this.coinHistory = data;
+      this.ath = this.coinHistory.market_data.ath[this.currency];
+      // console.log(this.ath);
+    },
+    async getCoinHistoryPaprika() {
+      const { data } = await axios.get(
         `https://api.coinpaprika.com/v1/tickers/${
           this.selectedPaprika.id
         }?quotes=${this.currency}`
       );
       // console.log(data);
-      this.coinHistory = data;
+      this.coinHistoryPaprika = data;
     },
-    async getCoinHistorySpecific() {
+    async getCoinHistoryPaprikaSpecific() {
       const { data } = await axios.get(
         `https://api.coinpaprika.com/v1/tickers/${
           this.selectedPaprika.id
@@ -134,7 +181,7 @@ export default {
       this.priceHistory = data;
       this.series[0].data = [];
       this.priceHistory.forEach(coin => {
-        this.series[0].data.push({x: coin.timestamp, y:coin.price});
+        this.series[0].data.push({ x: coin.timestamp, y: coin.price });
         // this.chartOptions.xaxis.categories.push(coin.timestamp);
       });
     },
@@ -151,7 +198,11 @@ export default {
       } else if (this.startDate === this.lastYear) {
         this.timeInterval = "7d";
       }
-      this.getCoinHistorySpecific();
+      this.getCoinHistoryPaprikaSpecific();
+    },
+    async findCoinAth() {
+      // this.ath = await this.coinHistory;
+      // console.log(this.ath);
     }
   }
 };
