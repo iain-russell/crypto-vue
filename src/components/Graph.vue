@@ -5,7 +5,7 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Market Cap</p>
-            <p class="subtitle">{{ this.currencyUnit }}{{ this.marketCap }}</p>
+            <p class="subtitle">{{ this.currencyUnit + this.marketCap }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
@@ -74,7 +74,7 @@
             sortable
             centered
           >
-            {{ currencyUnit }} {{ formatNumber(props.row.market_cap) }}
+            {{ currencyUnit + formatNumber(props.row.market_cap) }}
           </b-table-column>
           <b-table-column
             field="current_price"
@@ -83,7 +83,7 @@
             sortable
             centered
           >
-            {{ currencyUnit }}{{ formatPrice(props.row.current_price) }}
+            {{ currencyUnit + formatPrice(props.row.current_price) }}
           </b-table-column>
           <b-table-column
             class="is-right"
@@ -131,11 +131,10 @@ import axios from "axios";
 import { router } from "../main.js";
 
 import GraphMiniChart from "./GraphMiniChart";
-import GraphMegaChart from "./GraphMegaChart";
 
 export default {
   name: "Graph",
-  components: { GraphMiniChart, GraphMegaChart },
+  components: { GraphMiniChart },
   data: function() {
     return {
       coins: [],
@@ -159,7 +158,6 @@ export default {
     this.getCoinsPaprika();
     this.getMarketCap();
     this.getCurrencies();
-    // this.findCurrencyUnit();
   },
   watch: {
     currency: function() {
@@ -175,14 +173,12 @@ export default {
   computed: {},
   methods: {
     async getCoins() {
-      this.loading = true;
       const { data } = await axios.get(
         `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${
           this.currency
         }&order=market_cap_desc&per_page=100&page=1&sparkline=true`
       );
       this.coins = data;
-      this.loading = false;
     },
     async getCoinsPaprika() {
       const { data } = await axios.get("https://api.coinpaprika.com/v1/coins");
@@ -241,7 +237,6 @@ export default {
     },
     clickMegaChart(payload) {
       router.push({
-        // path: '/megachart',
         name: "megachart",
         params: {
           selected: this.selected,
@@ -267,7 +262,4 @@ table td {
   padding-top: none;
   margin-top: 0;
 }
-/* #table-section {
-  padding-top: 0;
-} */
 </style>

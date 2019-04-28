@@ -6,7 +6,8 @@ import "buefy/dist/buefy.css";
 import VueApexCharts from "vue-apexcharts";
 
 import Graph from "./components/Graph";
-import GraphMegaChart2 from "./components/GraphMegaChart2";
+import GraphMegaChart from "./components/GraphMegaChart";
+import About from "./components/About";
 
 Vue.config.productionTip = false;
 
@@ -21,7 +22,8 @@ export const router = new VueRouter({
   mode: "history",
   routes: [
     { path: "/", component: Graph },
-    { path: "/megachart", name: 'megachart', component: GraphMegaChart2, props: true }
+    { path: "/megachart", name: 'megachart', component: GraphMegaChart, props: true },
+    { path: "/about", component: About}
   ]
 });
 

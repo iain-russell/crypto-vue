@@ -3,7 +3,6 @@
     <div id="app">
       <Navbar />
       <router-view> </router-view>
-      <!-- <Graph /> -->
     </div>
   </div>
 </template>

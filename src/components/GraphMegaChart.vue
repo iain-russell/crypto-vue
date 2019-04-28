@@ -1,37 +1,61 @@
 <template>
-  <div class="center">
-    <p> im 'the chart"</p>
-    <div class="modal-card" style="width: auto">
-      <header class="modal-card-head">
-        <p class="modal-card-title">
-          <!-- <img :src="this.selected.image" class="image is-32x32" /> -->
-          {{ this.selected.name }}
-        </p>
-      </header>
-      <section class="modal-card-body">
-        <div>
-          <b-select v-model="startDate">
-            <option value="lastDay">1d</option>
-            <option value="lastWeek">7d</option>
-            <option value="lastMonth">1m</option>
-            <option value="last3Month">3m</option>
-            <option value="LastYear">1y</option>
-          </b-select>
+  <div>
+    <section class="">
+      <nav class="level">
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">24hr High</p>
+            <p class="subtitle">{{ this.currencyUnit + this.high_24h }}</p>
+          </div>
         </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">24hr Low</p>
+            <p class="subtitle">{{ this.currencyUnit + this.low_24h }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">All time high</p>
+            <p class="subtitle">{{ this.currencyUnit + this.ath }}</p>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
+            <p class="heading">From ATH</p>
+            <p class="subtitle">{{ this.ath_change_percentage }}%</p>
+          </div>
+        </div>
+      </nav>
+    </section>
+    <section class="section">
+      <div class="center">
+        <button class="button" :value="this.lastDay" @click="setStartDate">
+          1d
+        </button>
+        <button class="button" :value="this.lastWeek" @click="setStartDate">
+          7d
+        </button>
+        <button class="button" :value="this.lastMonth" @click="setStartDate">
+          1m
+        </button>
+        <button class="button" :value="this.last3Month" @click="setStartDate">
+          3m
+        </button>
+        <button class="button" :value="this.lastYear" @click="setStartDate">
+          1y
+        </button>
+      </div>
+      <div class="center">
         <apexchart
-          type="line"
-          width="150"
-          height="50"
+          type="area"
+          width="800"
+          height="400"
           :options="chartOptions"
           :series="series"
         />
-      </section>
-      <footer class="modal-card-foot">
-        <button class="button" type="button" @click="$parent.close()">
-          Close
-        </button>
-      </footer>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -44,16 +68,8 @@ export default {
   components: {
     apexchart: VueApexCharts
   },
-  props: ["selected", "selectedPaprika", "currency"],
+  props: ["selected", "selectedPaprika", "currency", "currencyUnit"],
 
-  created: function() {
-    this.getRelevantDates();
-    this.getCoinHistory();
-    // console.log(this.selected);
-    // this.series[0].data = this.selected.sparkline_in_7d.filter((value, index) => {
-    // return index % 7 === 0;
-    // });
-  },
   data() {
     return {
       today: "",
@@ -62,48 +78,68 @@ export default {
       lastMonth: "",
       last3Month: "",
       lastYear: "",
-      startDate: "lastDay",
-      timeInterval: "1d",
+      startDate: "",
+      timeInterval: "30m",
       coinHistory: [],
+      coinHistoryPaprika: [],
       priceHistory: [],
+      ath: "",
+      high_24h: "",
+      low_24h: "",
+      ath_change_percentage: "",
       series: [
         {
-          data: [1, 2, 3]
+          data: []
         }
       ],
       chartOptions: {
         chart: {
-          height: 150,
-          sparkline: {
-            enabled: true
-          },
-          zoom: {
-            enabled: false
-          }
-        },
-        dataLabels: {
-          enabled: false
+          height: 150
         },
         stroke: {
           curve: "smooth",
           width: 2.5
         },
-        // xaxis: {
-        //   categories: [],
-        //   labels: { show: false }
-        // },
-        yaxis: {
-          categories: [],
-          labels: { show: false }
-        },
-        legend: {
-          show: false
+        dataLabels: {
+          enabled: false
         },
         tooltip: {
-          enabled: false
+          style: {
+            fontSize: "14px"
+          },
+          x: {
+            show: false
+          },
+          y: {
+            formatter: value => this.currencyUnit + value,
+            title: {
+              formatter: seriesName => `${this.selected.name} price`
+            }
+          },
+          marker: { show: false }
+        },
+        xaxis: {
+          labels: {
+            show: false
+          }
+        },
+        yaxis: {
+          labels: {
+            formatter: value => this.currencyUnit + value
+          }
         }
       }
     };
+  },
+  watch: {
+    startDate: function() {}
+  },
+  created: function() {
+    this.getRelevantDates();
+    this.startDate = this.lastDay;
+    this.getCoinHistory();
+    this.getCoinHistoryPaprika();
+    this.getCoinHistoryPaprikaSpecific();
   },
   methods: {
     getRelevantDates() {
@@ -132,20 +168,65 @@ export default {
       this.lastYear = lastYear.toISOString().substr(0, 10);
     },
     async getCoinHistory() {
-      const { data } = await axios.get(`https://api.coinpaprika.com/v1/tickers/${this.selectedPaprika.id}?quotes=${this.currency}`
+      const { data } = await axios.get(
+        `https://api.coingecko.com/api/v3/coins/${this.selected.id}`
       );
       this.coinHistory = data;
+      this.ath = this.coinHistory.market_data.ath[this.currency];
+      this.high_24h = this.coinHistory.market_data.high_24h[this.currency];
+      this.low_24h = this.coinHistory.market_data.low_24h[this.currency];
+      this.ath_change_percentage = this.coinHistory.market_data.ath_change_percentage[
+        this.currency
+      ].toFixed(2);
     },
-    async getCoinHistorySpecific() {
+    async getCoinHistoryPaprika() {
       const { data } = await axios.get(
-        `https://api.coinpaprika.com/v1/tickers/
-        ${this.selectedPaprika.id}
-        /historical?start=${this.startDate}
-        &end=${this.today}
-        &interval=${this.timeInterval}
-        &limit=5000`
+        `https://api.coinpaprika.com/v1/tickers/${
+          this.selectedPaprika.id
+        }?quotes=${this.currency}`
       );
+      this.coinHistoryPaprika = data;
+    },
+    async getCoinHistoryPaprikaSpecific() {
+      const { data } = await axios.get(
+        `https://api.coinpaprika.com/v1/tickers/${
+          this.selectedPaprika.id
+        }/historical?start=${this.startDate}&end=${this.today}&interval=${
+          this.timeInterval
+        }&limit=356`
+      );
+      this.priceHistory = data;
+      this.series[0].data = [];
+      this.priceHistory.forEach(coin => {
+        const coin_date = new Date(coin.timestamp);
+        const formatted_date = coin_date
+          .toISOString()
+          .substr(0, 19)
+          .replace("T", " ");
+        this.series[0].data.push({ x: formatted_date, y: coin.price });
+      });
+    },
+    setStartDate(event) {
+      this.startDate = event.target.value;
+      if (this.startDate === this.lastDay) {
+        this.timeInterval = "15m";
+      } else if (this.startDate === this.lastWeek) {
+        this.timeInterval = "2h";
+      } else if (this.startDate === this.lastMonth) {
+        this.timeInterval = "12h";
+      } else if (this.startDate === this.last3Month) {
+        this.timeInterval = "1d";
+      } else if (this.startDate === this.lastYear) {
+        this.timeInterval = "7d";
+      }
+      this.getCoinHistoryPaprikaSpecific();
     }
   }
 };
 </script>
+
+<style scoped>
+.button {
+  margin: 10px;
+}
+</style>
