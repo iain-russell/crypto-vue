@@ -47,18 +47,7 @@ export default {
         },
         stroke: {
           curve: "smooth",
-          width: 2.5
-        },
-        // xaxis: {
-        //   categories: [],
-        //   labels: { show: false }
-        // },
-        yaxis: {
-          categories: [],
-          labels: { show: false }
-        },
-        legend: {
-          show: false
+          width: 1.5
         },
         tooltip: {
           enabled: false

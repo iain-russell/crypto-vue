@@ -34,10 +34,10 @@
     <hr />
     <div class="center">
       <section class="section" id="search-section">
-        <b-field label="Find a cryptocurrency">
+        <b-field >
           <b-autocomplete
             v-model="searchName"
-            placeholder="e.g. Bitcoin"
+            placeholder="Search coins"
             :keep-first="keepFirst"
             :data="filteredDataObj"
             field="name"
@@ -74,6 +74,14 @@
             </p>
           </b-table-column>
           <b-table-column
+            field="symbol"
+            label=""
+            width="80"
+            centered
+          >
+            {{ props.row.symbol.toUpperCase() }}
+          </b-table-column>
+          <b-table-column
             field="name"
             label="Name"
             width="200"
@@ -89,15 +97,8 @@
               </div>
             </article>
           </b-table-column>
-          <b-table-column
-            field="market_cap"
-            label="Market Cap"
-            numeric
-            sortable
-            centered
-          >
-            {{ currencyUnit + formatNumber(props.row.market_cap) }}
-          </b-table-column>
+
+
           <b-table-column
             field="current_price"
             label="Price"
@@ -117,15 +118,7 @@
           >
             {{ formatNumber(props.row.circulating_supply.toFixed()) }}
           </b-table-column>
-          <b-table-column
-            field="symbol"
-            label="Symbol"
-            width="80"
-            sortable
-            centered
-          >
-            {{ props.row.symbol.toUpperCase() }}
-          </b-table-column>
+
           <b-table-column
             field="price_change_percentage_24h"
             label="24hr"
@@ -138,10 +131,21 @@
               </p>
             </span>
           </b-table-column>
+          <b-table-column
+            field="market_cap"
+            label="Market Cap"
+            numeric
+            sortable
+            centered
+          >
+            {{ currencyUnit + formatNumber(props.row.market_cap) }}
+          </b-table-column>
+
           <b-table-column field="sparkline_in_7d" label="Weekly" centered>
             <GraphMiniChart :sparklineData="props.row.sparkline_in_7d.price">
             </GraphMiniChart>
           </b-table-column>
+
         </template>
       </b-table>
     </section>
@@ -306,7 +310,7 @@ table td {
   width: 75vw;
 }
 #margin-info {
-  padding-top: none;
-  margin-top: 0;
+  padding-top: 0px;
+  margin-top: 0px;
 }
 </style>

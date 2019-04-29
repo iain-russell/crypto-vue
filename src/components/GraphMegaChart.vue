@@ -41,8 +41,9 @@
         </div>
       </nav>
     </section>
-    <hr>
+    <hr />
     <section class="section" id="time-selector">
+      <p class="center subtitle" id="charts-title">{{this.selected.name}} charts</p>
       <div class="center">
         <button class="button" :value="this.lastDay" @click="setStartDate">
           1d
@@ -247,15 +248,20 @@ export default {
 </script>
 
 <style scoped>
-hr {margin-bottom: 0px; }
+hr {
+  margin-bottom: 0px;
+}
 .button {
   margin: 10px;
 }
 .heading {
   font-size: 12px;
 }
+#charts-title {
+  margin-bottom: 0px;
+}
 #time-selector {
-  padding-top: 15px;
+  padding-top: 10px;
   padding-bottom: 0px;
 }
 #chart-section {
