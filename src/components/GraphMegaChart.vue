@@ -16,6 +16,14 @@
         </div>
         <div class="level-item has-text-centered">
           <div>
+            <p class="heading">24hr</p>
+            <span class="tag is-medium">
+            <p class="subtitle" :class="pricePercent(this.selected.price_change_percentage_24h)">{{ this.selected.price_change_percentage_24h.toFixed(2)}}%</p>
+          </span>
+          </div>
+        </div>
+        <div class="level-item has-text-centered">
+          <div>
             <p class="heading">All time high</p>
             <p class="subtitle">{{ this.currencyUnit + this.ath }}</p>
           </div>
@@ -28,7 +36,7 @@
         </div>
       </nav>
     </section>
-    <section class="section">
+    <section class="section" id="chart-section">
       <div class="center">
         <button class="button" :value="this.lastDay" @click="setStartDate">
           1d
@@ -46,15 +54,13 @@
           1y
         </button>
       </div>
-      <div class="center">
-        <apexchart
-          type="area"
-          width="800"
-          height="400"
-          :options="chartOptions"
-          :series="series"
-        />
-      </div>
+      <apexchart
+        id="chart"
+        type="area"
+        height="400"
+        :options="chartOptions"
+        :series="series"
+      />
     </section>
   </div>
 </template>
@@ -220,7 +226,14 @@ export default {
         this.timeInterval = "7d";
       }
       this.getCoinHistoryPaprikaSpecific();
-    }
+    },
+    pricePercent(price) {
+      if (price > 0) {
+        return "has-text-primary";
+      } else {
+        return "has-text-danger";
+      }
+    },
   }
 };
 </script>
@@ -228,5 +241,11 @@ export default {
 <style scoped>
 .button {
   margin: 10px;
+}
+.heading {
+  font-size: 12px;
+}
+#chart-section {
+  padding-left: 0px;
 }
 </style>
