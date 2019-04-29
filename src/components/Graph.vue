@@ -24,13 +24,33 @@
               <option
                 v-for="(coin, coinName) in filteredCurrencies"
                 :value="coinName"
-                >{{ coinName.toUpperCase() }}</option
-              >
+                >{{ coinName.toUpperCase() }} - {{ coin.unit }}
+              </option>
             </b-select>
           </div>
         </div>
       </nav>
     </section>
+    <hr />
+    <div class="center">
+      <section class="section" id="search-section">
+        <b-field label="Find a cryptocurrency">
+          <b-autocomplete
+            v-model="searchName"
+            placeholder="e.g. Bitcoin"
+            :keep-first="keepFirst"
+            :data="filteredDataObj"
+            field="name"
+            icon="magnify"
+            @select="option => (selected = option)"
+          >
+            <template slot="empty"
+              >No results found</template
+            >
+          </b-autocomplete>
+        </b-field>
+      </section>
+    </div>
     <section class="section" id="table-section">
       <b-table
         class="card"
@@ -147,12 +167,14 @@ export default {
       sparklineData: [],
       selected: null,
       selectedPaprika: "",
+      searchName: "",
       currencies: [],
       marketData: [],
       marketCap: [],
       btcDominance: "",
       ethDominance: "",
-      xrpDominance: ""
+      xrpDominance: "",
+      keepFirst: true
     };
   },
   created: function() {
@@ -174,13 +196,20 @@ export default {
   },
   computed: {
     filteredCurrencies: function() {
-      const filteredList = new Array;
+      const filteredList = new Array();
       for (const currency in this.currencies) {
         if (this.currencies[currency].type != "fiat") {
           delete this.currencies[currency];
         }
       }
       return this.currencies;
+    },
+    filteredDataObj() {
+      return this.coins.filter(coin => {
+        return (
+          coin.name.toLowerCase().indexOf(this.searchName.toLowerCase()) >= 0
+        );
+      });
     }
   },
   methods: {
@@ -269,6 +298,12 @@ table td {
 }
 .is-selected {
   background-color: white !important;
+}
+#search-section {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  min-width: 320px;
+  width: 75vw;
 }
 #margin-info {
   padding-top: none;

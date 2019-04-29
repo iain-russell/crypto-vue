@@ -16,6 +16,7 @@
         </div>
       </div>
     </nav>
+    <hr>
   </div>
 </template>
 
@@ -32,5 +33,8 @@ export default {
 }
 .navbar {
   padding: 10px;
+}
+hr {
+  margin-top: 0px;
 }
 </style>

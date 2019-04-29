@@ -18,8 +18,13 @@
           <div>
             <p class="heading">24hr</p>
             <span class="tag is-medium">
-            <p class="subtitle" :class="pricePercent(this.selected.price_change_percentage_24h)">{{ this.selected.price_change_percentage_24h.toFixed(2)}}%</p>
-          </span>
+              <p
+                class="subtitle"
+                :class="pricePercent(this.selected.price_change_percentage_24h)"
+              >
+                {{ this.selected.price_change_percentage_24h.toFixed(2) }}%
+              </p>
+            </span>
           </div>
         </div>
         <div class="level-item has-text-centered">
@@ -36,7 +41,8 @@
         </div>
       </nav>
     </section>
-    <section class="section" id="chart-section">
+    <hr>
+    <section class="section" id="time-selector">
       <div class="center">
         <button class="button" :value="this.lastDay" @click="setStartDate">
           1d
@@ -54,6 +60,8 @@
           1y
         </button>
       </div>
+    </section>
+    <section class="section" id="chart-section">
       <apexchart
         id="chart"
         type="area"
@@ -104,7 +112,7 @@ export default {
         },
         stroke: {
           curve: "smooth",
-          width: 2.5
+          width: 1.5
         },
         dataLabels: {
           enabled: false
@@ -233,19 +241,25 @@ export default {
       } else {
         return "has-text-danger";
       }
-    },
+    }
   }
 };
 </script>
 
 <style scoped>
+hr {margin-bottom: 0px; }
 .button {
   margin: 10px;
 }
 .heading {
   font-size: 12px;
 }
+#time-selector {
+  padding-top: 15px;
+  padding-bottom: 0px;
+}
 #chart-section {
+  padding-top: 5px;
   padding-left: 0px;
 }
 </style>
