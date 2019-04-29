@@ -21,9 +21,11 @@
           <div>
             <p class="heading">Currency</p>
             <b-select v-model="currency" icon="earth" class="currency-selector">
-              <option value="eur">EUR</option>
-              <option value="gbp">GBP</option>
-              <option value="usd">USD</option>
+              <option
+                v-for="(coin, coinName) in filteredCurrencies"
+                :value="coinName"
+                >{{ coinName.toUpperCase() }}</option
+              >
             </b-select>
           </div>
         </div>
@@ -170,7 +172,17 @@ export default {
       this.clickMegaChart();
     }
   },
-  computed: {},
+  computed: {
+    filteredCurrencies: function() {
+      const filteredList = new Array;
+      for (const currency in this.currencies) {
+        if (this.currencies[currency].type != "fiat") {
+          delete this.currencies[currency];
+        }
+      }
+      return this.currencies;
+    }
+  },
   methods: {
     async getCoins() {
       const { data } = await axios.get(
