@@ -6,6 +6,3 @@
 
   It uses two APIs, CoinGecko and Coinpaprika. The charts on
   the site are built using ApexCharts.
-
-  CoinSushi is hosted
-  on an AWS EC2 server. It is deployed using Docker and Nginx.
